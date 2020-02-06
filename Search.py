@@ -25,17 +25,8 @@ def read_tour_file(filename):
                 tokens = line.split(" ")
                 route.append(int(line.rstrip()))
                 line = f.readline()
-            route.append(route[0])
     f.close()
     return route
-
-def calc_route_length(route, city_coords):
-    length = 0
-    i = 0
-    while i != len(route)-1:
-        length = length + calc_pseudo_euclid_dist(city_coords[route[i]], city_coords[route[i+1]])
-        i = i + 1
-    return length
 
 def calc_pseudo_euclid_dist(i, j):
     xdiff = i[0] - j[0]
@@ -46,17 +37,57 @@ def calc_pseudo_euclid_dist(i, j):
     
     return dij
 
-def simulated_annealing(sol_initial, k_max):
+def generate_rand_route(city_coords):
+    cities = city_coords.keys()
+    route = random.sample(cities, len(cities))
+    route.append(route[0])
+    return route
+
+def calc_route_length(route, city_coords):
+    length = 0
+    i = 0
+    while i != len(route)-1:
+        length = length + calc_pseudo_euclid_dist(city_coords[route[i]], city_coords[route[i+1]])
+        i = i + 1
+    length = length + calc_pseudo_euclid_dist(city_coords[route[i]], city_coords[route[0]])
+    
+    return length
+
+def get_energy(solution, city_coords):
+    return calc_route_length(solution, city_coords)
+    
+def get_rand_neighbour(solution):
+    max_pos = len(solution) - 1
+    rand_pos_1 = random.randint(2, max_pos)
+    rand_pos_2 = random.randint(0, max_pos - rand_pos_1)
+
+    neighbour = solution.copy()
+    neighbour[rand_pos_1 : (rand_pos_1 + rand_pos_2)] = reversed(neighbour[rand_pos_1 : (rand_pos_1 + rand_pos_2)])
+
+    return neighbour
+
+def calc_acceptance_prob(energy_cur, energy_new, temp):
+    if energy_new < energy_cur:
+        return 1
+    else:
+        return math.exp((energy_cur - energy_new) / temp)
+
+def calc_new_temperature(temp, cooling_rate):
+    return temp = temp * cooling_rate
+
+def perform_simulated_annealing(temp_initial, cooling_rate, max_iteration, city_coords):
+    sol_initial = generate_rand_route(city_coords)
     sol_cur = sol_initial
-    energy_cur = get_energy(sol_cur)
+    energy_cur = get_energy(sol_cur, city_coords)
     sol_best = sol_cur
     energy_best = energy_cur
 
-    for k in range(0, k_max):
-        temp = get_temperature()
+    temp = temp_initial
+    iteration = 0
 
-        sol_new = get_neighbour(sol_cur)
-        energy_new = get_energy(sol_new)
+    while temp >= 0 and iteration < max_iteration:
+        sol_new = get_rand_neighbour(sol_cur)
+        energy_new = get_energy(sol_new, city_coords)
 
         if calc_acceptance_prob(energy_cur, energy_new, temp) > random.uniform(0, 1):
             sol_cur = sol_new
@@ -65,6 +96,9 @@ def simulated_annealing(sol_initial, k_max):
             sol_best = sol_new
             energy_best = energy_new
 
+        temp = calc_new_temperature(temp, cooling_rate)
+        iteration = iteration + 1
+
     return sol_best
 
 
@@ -72,6 +106,10 @@ def simulated_annealing(sol_initial, k_max):
 # Program start
 
 city_coords = read_tsp_file("att48.tsp")
+solution = perform_simulated_annealing(100, 0.7, 50, city_coords)
 
-route = read_tour_file("att48.opt.tour")
-print(calc_route_length(route, city_coords))
+print(solution)
+print(get_energy(solution, city_coords))
+
+# route = read_tour_file("att48.opt.tour")
+# print(calc_route_length(route, city_coords))
