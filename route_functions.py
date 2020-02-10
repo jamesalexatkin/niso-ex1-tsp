@@ -71,9 +71,8 @@ def generate_rand_route(city_coords):
     Returns:
         list: List of point numbers composing a route
     """
-    cities = city_coords.keys()
-    route = random.sample(cities, len(cities))
-    route.append(route[0])
+    route = [*city_coords]
+    random.shuffle(route)
     return route
 
 def calc_route_length(route, city_coords):
