@@ -1,15 +1,17 @@
 import math
 import random
 
+import matplotlib.pyplot as plt
+# import numpy as np
 
 def read_tsp_file(filename):
     """Return a dictionary of integer coordinates read from a .tsp file.
     
     Arguments:
-        filename (string): Name of the file to read
+        filename (string): Name of the file to read.
     
     Returns:
-        dict: Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}
+        dict: Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}.
     """
     coords = {}
     f = open(filename, "r")
@@ -27,10 +29,10 @@ def read_tour_file(filename):
     """Return a route as read from a .tour file.
     
     Arguments:
-        filename(string): Name of the file to read
+        filename(string): Name of the file to read.
     
     Returns:
-        list: List of point numbers composing a route
+        list: List of point numbers composing a route.
     """
     route = []
     f = open(filename, "r")
@@ -48,11 +50,11 @@ def calc_pseudo_euclid_dist(i, j):
     """Calculate the pseudo-Euclidean distance between two (x, y) points.
     
     Arguments:
-        i (int, int): Tuple representing x and y as integers
-        j  (int, int): Tuple representing x and y as integers
+        i (int, int): Tuple representing x and y as integers.
+        j  (int, int): Tuple representing x and y as integers.
     
     Returns:
-        int: Integer representing the calculated distance
+        int: Integer representing the calculated distance.
     """
     xdiff = i[0] - j[0]
     ydiff = i[1] - j[1]
@@ -66,10 +68,10 @@ def generate_rand_route(city_coords):
     """Generate a random route between all cities, given a dict.
     
     Args:
-        city_coords (dict): Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}
+        city_coords (dict): Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}.
     
     Returns:
-        list: List of point numbers composing a route
+        list: List of point numbers composing a route.
     """
     route = [*city_coords]
     random.shuffle(route)
@@ -79,8 +81,8 @@ def calc_route_length(route, city_coords):
     """Calculate the length of a route.
     
     Args:
-        route (list): List of point numbers composing a route
-        city_coords Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}
+        route (list): List of point numbers composing a route.
+        city_coords Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}.
     
     Returns:
         int: Length of route
@@ -95,6 +97,12 @@ def calc_route_length(route, city_coords):
     return length
 
 def draw_route(route, city_coords):
+    """Visualise a route. Points represent cities and edges represent a journey between them.
+    
+    Args:
+        route (list): List of point numbers composing a route.
+        city_coords Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}.
+    """
     for i in range(0, len(route)):
         city_num1 = route[i]
         (x1, y1) = city_coords[city_num1]

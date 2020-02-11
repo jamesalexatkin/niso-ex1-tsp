@@ -80,7 +80,7 @@ def perform_simulated_annealing(temp_initial, cooling_rate, max_iteration, city_
         city_coords (dict): Dictionary containing the number of the node as key, and an (x, y) coordinate as value e.g. {1 : (34, 56)}
     
     Returns:
-        list: List of point numbers composing the optimal route found
+        list: List of point numbers composing the best route found
     """
     sol_initial = generate_rand_route(city_coords)
     sol_cur = sol_initial

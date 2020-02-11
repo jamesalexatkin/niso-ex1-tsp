@@ -22,9 +22,15 @@ city_coords = read_tsp_file("att48.tsp")
 # od = collections.OrderedDict(sorted(results.items()))
 # print(od)
 
-(solutions, lengths, average_length, standard_dev) = do_sa_runs(50, 0.05, 3000, 30, city_coords)
-print(average_length)
-print(standard_dev)
+# (solutions, lengths, average_length, standard_dev) = do_sa_runs(50, 0.05, 3000, 30, city_coords)
+# print(average_length)
+# print(standard_dev)
+
+solution = perform_genetic_algorithm(10, 3000, 0.3, 0.5, city_coords)
+print(solution)
+draw_route(solution, city_coords)
+
+
 
 # print(tune_parameters_sa(0.05, 0.0, 1, 0, 1, 100, 3000, city_coords))
 
