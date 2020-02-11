@@ -58,7 +58,7 @@ def select_parents(pop, pop_size, elitism_size):
     return pop[0:group_size]
 
 def breed_route(parent1, parent2):
-    """Produce a child route from two parents.
+    """Produce a child route from two parents. Uses 2-point crossover.
     
     Args:
         parent1 (list): List of point numbers composing a route.
@@ -69,18 +69,26 @@ def breed_route(parent1, parent2):
     """
     child = []
 
-    bound1 = random.randint(0, len(parent1))
-    bound2 = random.randint(0, len(parent2))
+    geneA = random.randint(0, len(parent1))
+    geneB = random.randint(0, len(parent2))
 
-    lower_bound = min(bound1, bound2)
-    upper_bound = max(bound1, bound2)
+    start = min(geneA, geneB)
+    end = max(geneA, geneB)
 
-    for i in range(0, len(parent1)):
-        if i in range(lower_bound, upper_bound):
-            child.append(parent1[i])
+    slice1 = parent1[start : end]
+    ptr2 = 0
+
+    for ptr1 in range(0, len(parent1)):
+        if ptr1 in range(start, end):
+            child.append(parent1[ptr1])
         else:
-            child.append(parent2[i])
-            
+            gene2 = parent2[ptr2]
+            while gene2 in slice1:
+                ptr2 = ptr2 + 1
+                gene2 = parent2[ptr2]
+            child.append(gene2)
+            ptr2 = ptr2 + 1
+
     return child
 
 def breed_population(selected_routes, pop_size):
@@ -171,7 +179,8 @@ def produce_next_gen(pop, pop_size, elitism_size, mutation_prob, city_coords):
     child_routes = breed_population(selected_routes, pop_size)
 
     # Variation
-    next_gen = mutate_population(child_routes, mutation_prob)
+    # next_gen = mutate_population(child_routes, mutation_prob)
+    next_gen = child_routes
 
     return next_gen
 

@@ -28,6 +28,8 @@ city_coords = read_tsp_file("att48.tsp")
 
 solution = perform_genetic_algorithm(10, 3000, 0.3, 0.5, city_coords)
 print(solution)
+print(sorted(solution))
+print(len(solution))
 draw_route(solution, city_coords)
 
 
