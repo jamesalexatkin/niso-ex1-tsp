@@ -93,3 +93,21 @@ def calc_route_length(route, city_coords):
     length = length + calc_pseudo_euclid_dist(city_coords[route[i]], city_coords[route[0]])
     
     return length
+
+def draw_route(route, city_coords):
+    for i in range(0, len(route)):
+        city_num1 = route[i]
+        (x1, y1) = city_coords[city_num1]
+
+        plt.text(x1+0.3, y1+0.3, i, fontsize=9)
+
+        if i == len(route) - 1:
+            city_num2 = route[0]        
+            (x2, y2) = city_coords[city_num2]
+        else:
+            city_num2 = route[i+1]        
+            (x2, y2) = city_coords[city_num2]
+
+        plt.plot([x1,x2], [y1,y2], 'ro-')
+
+    plt.show()

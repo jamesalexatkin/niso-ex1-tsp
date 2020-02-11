@@ -1,3 +1,5 @@
+import statistics
+
 from route_functions import *
 
 
@@ -65,6 +67,9 @@ def calc_new_temperature(temp, cooling_rate):
     """
     return temp * cooling_rate
 
+def linear_cooling(temp_initial, cooling_rate, iteration):
+    return temp_initial / (1 + (cooling_rate * iteration))
+
 def perform_simulated_annealing(temp_initial, cooling_rate, max_iteration, city_coords):
     """Perform simulated annealing (SA) to solve the Travelling Salesman Problem for a given group of cities.
     
@@ -97,7 +102,52 @@ def perform_simulated_annealing(temp_initial, cooling_rate, max_iteration, city_
             sol_best = sol_new
             energy_best = energy_new
 
-        temp = calc_new_temperature(temp, cooling_rate)
+        # temp = calc_new_temperature(temp, cooling_rate)
+        temp = linear_cooling(temp_initial, cooling_rate, iteration)
         iteration = iteration + 1
 
     return sol_best
+
+def tune_parameters_sa(min_cooling_rate, cooling_step, cooling_iter, min_temp, temp_step, temp_iter, max_iteration, city_coords):
+    cooling_rate = min_cooling_rate
+    temperature = min_temp
+
+    (best_length, best_cooling_rate, best_temperature) = (float("inf"), cooling_rate, min_temp)
+
+    i = 0   
+
+    while i < cooling_iter:
+        j = 0
+        temperature = min_temp
+        while j < temp_iter:
+            solution = perform_simulated_annealing(temperature, cooling_rate, max_iteration, city_coords)
+            length = calc_route_length(solution, city_coords)
+            if length < best_length:
+                (best_length, best_cooling_rate, best_temperature) = (length, cooling_rate, temperature)
+
+            print("Completed run " + str(i) + "/" + str(cooling_iter-1) + ", " + str(j) + "/" + str(temp_iter-1), end="\r")
+            temperature = temperature + temp_step
+            j = j + 1
+        cooling_rate = cooling_rate + cooling_step
+        i = i + 1
+
+    print("\n")
+    return (best_length, best_cooling_rate, best_temperature)
+
+def do_sa_runs(temperature, cooling_rate, max_iteration, max_runs, city_coords):
+
+    solutions = []
+    lengths = []
+    cumulative_lengths = 0
+
+    for i in range(0, max_runs):
+        sol = perform_simulated_annealing(temperature, cooling_rate, max_iteration, city_coords)
+        solutions.append(sol)
+        length = calc_route_length(sol, city_coords)
+        lengths.append(length)
+        cumulative_lengths = cumulative_lengths + length
+
+    average_length = cumulative_lengths / max_runs
+    standard_dev = statistics.stdev(lengths)
+
+    return (solutions, lengths, average_length, standard_dev)
