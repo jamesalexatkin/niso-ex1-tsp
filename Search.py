@@ -15,16 +15,45 @@ city_coords = read_tsp_file("att48.tsp")
 
 
 ### SIMULATED ANNEALING
+## Finding parameters
 # parameter_results = tune_parameters_sa(100, 100, 6, 2, 2, 5, 3000, city_coords)
 # print(parameter_results)
 # (best_length, best_temperature, best_cooling_rate) = find_best_parameters_sa(parameter_results)
 # print((best_length, best_temperature, best_cooling_rate))
 
+## Running SA
 # (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_sa_runs(best_temperature, best_cooling_rate, 3000, 30, city_coords)
 # print(average_length)
 # print(standard_dev)
 # print(best_length)
 # draw_route(best_solution, city_coords)
+
+
+### GENETIC ALGORITHM
+# Finding parameters
+# parameter_results = tune_parameters_ga(, 3000, city_coords)
+# print(parameter_results)
+# (best_length, ) = find_best_parameters_ga(parameter_results)
+# print((best_length, best_temperature, best_cooling_rate))
+
+# # Running GA
+# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ga_runs(, 3000, 30, city_coords)
+# print(average_length)
+# print(standard_dev)
+# print(best_length)
+# draw_route(best_solution, city_coords)
+
+
+
+# solution = perform_genetic_algorithm(1500, 0.5, 2, 0.5, 3000, city_coords)
+# print(solution)
+# print(calc_route_length(solution, city_coords))
+
+
+solution = perform_tabu_search(50, 3000, city_coords)
+print(solution)
+print(calc_route_length(solution, city_coords))
+draw_route(solution, city_coords)
 
 # results = {}
 # for i in range(0, 10):

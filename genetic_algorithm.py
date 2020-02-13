@@ -44,7 +44,7 @@ def rank_routes(pop, city_coords):
     return ranked_routes
 
 def select_parents(pop, pop_size, elite_proportion, norm_factor):
-    """Select promising parent solutions from a population. Implemented as simple truncation (or elitism) selection.
+    """Select promising parent solutions from a population. Implemented as simple truncation (also known as elitism) selection.
     
     Args:
         pop (list): List of routes.
@@ -234,7 +234,6 @@ def perform_genetic_algorithm(pop_size, elitism_size, norm_factor, mutation_prob
 
     for i in tqdm(range(0, max_iteration)):        
         pop = produce_next_gen(pop, pop_size, elitism_size, norm_factor, mutation_prob, city_coords)
-        # print("Completed iteration " + str(iteration) + "/" + str(max_iteration), end="\r")
         if i % 10 == 0:
             print(" Best length : " + str(calc_route_length(pop[0], city_coords)))
 
