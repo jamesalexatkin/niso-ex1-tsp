@@ -13,7 +13,18 @@ from tabu_search import *
 # Program start
 city_coords = read_tsp_file("att48.tsp")
 
-# print(tune_parameters_sa(2, 2, 5, 100, 100, 6, 3000, city_coords))
+
+### SIMULATED ANNEALING
+# parameter_results = tune_parameters_sa(100, 100, 6, 2, 2, 5, 3000, city_coords)
+# print(parameter_results)
+# (best_length, best_temperature, best_cooling_rate) = find_best_parameters_sa(parameter_results)
+# print((best_length, best_temperature, best_cooling_rate))
+
+# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_sa_runs(best_temperature, best_cooling_rate, 3000, 30, city_coords)
+# print(average_length)
+# print(standard_dev)
+# print(best_length)
+# draw_route(best_solution, city_coords)
 
 # results = {}
 # for i in range(0, 10):
@@ -26,11 +37,13 @@ city_coords = read_tsp_file("att48.tsp")
 # print(average_length)
 # print(standard_dev)
 
-solution = perform_genetic_algorithm(10, 3000, 0.3, 0.5, city_coords)
-print(solution)
-print(sorted(solution))
-print(len(solution))
-draw_route(solution, city_coords)
+# solution = perform_genetic_algorithm(3000, 0.5, 2, 0.5, 3000, city_coords)
+# # solution = read_tour_file("att48.opt.tour")
+# print(solution)
+# print(calc_route_length(solution, city_coords))
+# draw_route(solution, city_coords)
+
+# print(tune_parameters_ga(500, 500, 2, 0.3, 0.3, 3, 0.3, 0.3, 3, 0.3, 0.3, 3, 3000, city_coords))
 
 
 

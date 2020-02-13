@@ -44,7 +44,7 @@ def perform_tabu_search(max_tabu, max_iteration, city_coords):
         tabu_list.append(candidate_best)
         if len(tabu_list) > max_tabu:
             tabu_list.pop(0)
-
+        print("Completed iteration " + str(iteration) + "/" + str(max_iteration), end="\r")
         iteration = iteration + 1
 
     return sol_best

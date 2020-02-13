@@ -39,6 +39,41 @@ def get_rand_neighbour(solution):
 
     return neighbour
 
+def get_rand_neighbour_2opt(solution):
+    """Get a random neighbouring solution given a particular solution. This is found by performing a 2-Opt swap between two randoms cities.
+    
+    Args:
+        solution (list): List of point numbers composing a route
+    
+    Returns:
+        list: List of point numbers composing a route
+    """
+    # Get two randoms
+    max_pos = len(solution) - 1
+    rand_pos_1 = random.randint(0, max_pos)
+    rand_pos_2 = rand_pos_1
+    # Make sure second random is distinct and not same as first
+    while rand_pos_2 == rand_pos_1:
+        rand_pos_2 = random.randint(0, max_pos)
+
+    i = min(rand_pos_1, rand_pos_2)
+    j = max(rand_pos_1, rand_pos_2)
+
+    neighbour = []
+
+    # Python slice operator is exclusive on the upper bound so the calculations are slightly different
+    # Items 1 - (i-1) get added in order
+    for city in solution[0 : i]:
+        neighbour.append(city)
+    # Items i - j get added in reversed order
+    for city in reversed(solution[i : (j+1)]):
+        neighbour.append(city)
+    # Items j+1 - end get added in order
+    for city in solution[(j+1) :]:
+        neighbour.append(city)
+
+    return neighbour
+
 def calc_acceptance_prob(energy_cur, energy_new, temp):
     """Calculate the probability needed to accept a new solution as the best solution.
     
@@ -92,7 +127,7 @@ def perform_simulated_annealing(temp_initial, cooling_rate, max_iteration, city_
     iteration = 0
 
     while temp > 0 and iteration < max_iteration:
-        sol_new = get_rand_neighbour(sol_cur)
+        sol_new = get_rand_neighbour_2opt(sol_cur)
         energy_new = get_energy(sol_new, city_coords)
 
         if calc_acceptance_prob(energy_cur, energy_new, temp) > random.uniform(0, 1):
@@ -108,31 +143,43 @@ def perform_simulated_annealing(temp_initial, cooling_rate, max_iteration, city_
 
     return sol_best
 
-def tune_parameters_sa(min_cooling_rate, cooling_step, cooling_iter, min_temp, temp_step, temp_iter, max_iteration, city_coords):
+def tune_parameters_sa(min_temp, temp_step, temp_iter, min_cooling_rate, cooling_step, cooling_iter, max_iteration, city_coords):
     cooling_rate = min_cooling_rate
     temperature = min_temp
 
-    (best_length, best_cooling_rate, best_temperature) = (float("inf"), cooling_rate, min_temp)
+    i = 0
 
-    i = 0   
+    results = []
 
-    while i < cooling_iter:
+    while i < temp_iter:
         j = 0
-        temperature = min_temp
-        while j < temp_iter:
+        cooling_rate = min_cooling_rate
+        while j < cooling_iter:
             solution = perform_simulated_annealing(temperature, cooling_rate, max_iteration, city_coords)
             length = calc_route_length(solution, city_coords)
-            if length < best_length:
-                (best_length, best_cooling_rate, best_temperature) = (length, cooling_rate, temperature)
+            results.append((length, temperature, cooling_rate))
 
-            print("Completed run " + str(i) + "/" + str(cooling_iter-1) + ", " + str(j) + "/" + str(temp_iter-1), end="\r")
-            temperature = temperature + temp_step
+            print("Completed run " + str(i) + "/" + str(temp_iter-1) + ", " + str(j) + "/" + str(cooling_iter-1), end="\r")
+            cooling_rate = cooling_rate + cooling_step
             j = j + 1
-        cooling_rate = cooling_rate + cooling_step
+        temperature = temperature + temp_step
         i = i + 1
 
     print("\n")
-    return (best_length, best_cooling_rate, best_temperature)
+    return results
+
+def find_best_parameters_sa(results):
+    best_temp = 0
+    best_cooling_rate = 0
+    best_length = float("inf")
+
+    for (length, temp, cooling) in results:
+        if length < best_length:
+            best_length = length
+            best_temp = temp
+            best_cooling_rate = cooling
+
+    return (best_length, best_temp, best_cooling_rate)
 
 def do_sa_runs(temperature, cooling_rate, max_iteration, max_runs, city_coords):
 
@@ -140,14 +187,20 @@ def do_sa_runs(temperature, cooling_rate, max_iteration, max_runs, city_coords):
     lengths = []
     cumulative_lengths = 0
 
+    best_length = float("inf")
+    best_solution = []
+
     for i in range(0, max_runs):
-        sol = perform_simulated_annealing(temperature, cooling_rate, max_iteration, city_coords)
-        solutions.append(sol)
-        length = calc_route_length(sol, city_coords)
+        solution = perform_simulated_annealing(temperature, cooling_rate, max_iteration, city_coords)
+        solutions.append(solution)
+        length = calc_route_length(solution, city_coords)
         lengths.append(length)
         cumulative_lengths = cumulative_lengths + length
+        if length < best_length:
+            best_length = length
+            best_solution = solution
 
     average_length = cumulative_lengths / max_runs
     standard_dev = statistics.stdev(lengths)
 
-    return (solutions, lengths, average_length, standard_dev)
+    return (solutions, lengths, best_solution, best_length, average_length, standard_dev)

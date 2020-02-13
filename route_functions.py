@@ -107,7 +107,12 @@ def draw_route(route, city_coords):
         city_num1 = route[i]
         (x1, y1) = city_coords[city_num1]
 
-        plt.text(x1+0.3, y1+0.3, i, fontsize=9)
+        if i == 0:
+            plt.text(x1+0.3, y1+0.3, str(city_num1) + " Start", fontsize=9)
+        elif i == len(route)-1:
+            plt.text(x1+0.3, y1+0.3, str(city_num1) + " End", fontsize=9)
+        else:
+            plt.text(x1+0.3, y1+0.3, city_num1, fontsize=9)
 
         if i == len(route) - 1:
             city_num2 = route[0]        
