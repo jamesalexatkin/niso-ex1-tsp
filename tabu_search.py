@@ -59,7 +59,15 @@ def perform_tabu_search(max_tabu, tabu_penalty, max_iteration, city_coords):
 
     candidate_best = sol_initial
 
-    for i in tqdm(range(0, max_iteration)):
+    # Track when the last time the best solution changed was
+    last_iteration_changed = 0
+    # If no changes to the best solution are found after this many iterations, we assume convergence and give up to save time
+    STOP_AFTER = 300
+
+    for i in tqdm(range(0, max_iteration), miniters=10):
+        if i - last_iteration_changed >= STOP_AFTER:
+            print(" No changes found in the past " + str(STOP_AFTER) + " iterations, exiting")
+            break
         # Find neighbour solutions for the best candidate
         neighbours = get_neighbours(candidate_best)
         # Start by considering first neighbour
@@ -79,6 +87,7 @@ def perform_tabu_search(max_tabu, tabu_penalty, max_iteration, city_coords):
         if candidate_best_length < length_best:
             sol_best = candidate_best
             length_best = candidate_best_length
+            last_iteration_changed = i
         
         # Last candidate considered is now tabu
         tabu_list.append(candidate_best)
@@ -88,7 +97,7 @@ def perform_tabu_search(max_tabu, tabu_penalty, max_iteration, city_coords):
 
         # Print best length every 10 iterations
         if i % 10 == 0:
-            print(" Best length : " + str(length_best))
+            tqdm.write(" Best length : " + str(length_best))
 
     return sol_best
 
@@ -98,14 +107,16 @@ def tune_parameters_ts(min_tabu_size, tabu_size_step, tabu_size_iter, min_tabu_p
 
     results = []
 
+    # Loop over tabu sizes
     for i in tqdm(range(0, tabu_size_iter)):
         tabu_penalty = min_tabu_penalty
-
+        # Look over tabu penalties
         for j in tqdm(range(0, tabu_penalty_iter)):
             solution = perform_tabu_search(tabu_size, tabu_penalty, max_iteration, city_coords)
             length = calc_route_length(solution, city_coords)
             results.append((length, tabu_size, tabu_penalty))
             tabu_penalty = tabu_penalty + tabu_penalty_step
+            print("Completed run " + str(i+1) + "/" + str(tabu_size_iter) + ", " + str(j+1) + "/" + str(tabu_penalty_iter))
 
         tabu_size = tabu_size + tabu_size_step
 

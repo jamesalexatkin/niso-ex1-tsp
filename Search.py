@@ -15,33 +15,39 @@ city_coords = read_tsp_file("att48.tsp")
 
 
 ### SIMULATED ANNEALING
-## Finding parameters
+# # Finding parameters
 # parameter_results = tune_parameters_sa(100, 100, 6, 2, 2, 5, 3000, city_coords)
 # print(parameter_results)
 # (best_length, best_temperature, best_cooling_rate) = find_best_parameters_sa(parameter_results)
 # print((best_length, best_temperature, best_cooling_rate))
 
-## Running SA
+# # Running SA
 # (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_sa_runs(best_temperature, best_cooling_rate, 3000, 30, city_coords)
-# print(average_length)
-# print(standard_dev)
-# print(best_length)
+# print("Average length: " + str(average_length))
+# print("Standard deviation: " + str(standard_dev))
+# print("Best length: " + str(best_length))
+# print("Lengths:")
+# print(lengths)
 # draw_route(best_solution, city_coords)
 
 
 ### GENETIC ALGORITHM
-# Finding parameters
-# parameter_results = tune_parameters_ga(, 3000, city_coords)
+# # Finding parameters
+# parameter_results = tune_parameters_ga_nomut(1000, 1000, 5, 0.3, 0.3, 3, 0.5, 0.5, 2, 3000, city_coords)
 # print(parameter_results)
-# (best_length, ) = find_best_parameters_ga(parameter_results)
-# print((best_length, best_temperature, best_cooling_rate))
+# (best_length, best_pop_size, best_elitism_size, best_norm_factor) = find_best_parameters_ga(parameter_results)
+# print((best_length, best_pop_size, best_elitism_size, best_norm_factor))
 
 # # Running GA
-# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ga_runs(, 3000, 30, city_coords)
+# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ga_runs(best_pop_size, best_elitism_size, best_norm_factor, 9999, 3000, 30, city_coords)
+# print("Parameter results: ")
 # print(parameter_results)
-# print(average_length)
-# print(standard_dev)
-# print(best_length)
+# print("Best length, best pop size, best elite size, best norm factor: " + str(best_length) + ", " + str(best_pop_size) + ", " + str(best_elitism_size) + ", " + str(best_norm_factor))
+# print("Average length: " + str(average_length))
+# print("Standard deviation: " + str(standard_dev))
+# print("Best length: " + str(best_length))
+# print("Lengths:")
+# print(lengths)
 # draw_route(best_solution, city_coords)
 
 
@@ -54,14 +60,15 @@ city_coords = read_tsp_file("att48.tsp")
 
 # # Running TS
 # (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ts_runs(best_tabu_size, best_tabu_penalty, 3000, 30, city_coords)
+# print("Parameter results: ")
 # print(parameter_results)
-# print((best_length, best_tabu_size, best_tabu_penalty))
-# print(average_length)
-# print(standard_dev)
-# print(best_length)
+# print("Best length, best tabu size, best tabu penalty: " + str(best_length) + ", " + str(best_tabu_size) + ", " + str(best_tabu_penalty))
+# print("Average length: " + str(average_length))
+# print("Standard deviation: " + str(standard_dev))
+# print("Best length: " + str(best_length))
 # draw_route(best_solution, city_coords)
 
-solution = perform_tabu_search(50, 100, 3000, city_coords)
+solution = perform_tabu_search(1000, 100, 100, city_coords)
 
 
 

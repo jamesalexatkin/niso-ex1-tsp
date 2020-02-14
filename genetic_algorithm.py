@@ -1,4 +1,5 @@
 from tqdm import tqdm
+import statistics
 
 from route_functions import *
 
@@ -159,7 +160,7 @@ def mutate_route(route, mutation_prob):
             # Random is inclusive so we minus 1 from len
             j = random.randint(0, len(route)-1)
 
-            print(", ".join((str(i), str(j))))
+            # print(", ".join((str(i), str(j))))
 
 
             city1 = route[i]
@@ -232,10 +233,26 @@ def perform_genetic_algorithm(pop_size, elitism_size, norm_factor, mutation_prob
     """
     pop = generate_rand_population(pop_size, city_coords)
 
-    for i in tqdm(range(0, max_iteration)):        
+    # Track when the last time the best solution changed was
+    last_iteration_changed = 0
+    # If no changes to the best solution are found after this many iterations, we assume convergence and give up to save time
+    STOP_AFTER = 300
+    best_length = 10000000
+
+    for i in tqdm(range(0, max_iteration)):
+        if i - last_iteration_changed >= STOP_AFTER:
+            print(" No changes found in the past " + str(STOP_AFTER) + " iterations, exiting")
+            break
         pop = produce_next_gen(pop, pop_size, elitism_size, norm_factor, mutation_prob, city_coords)
+
+        current_best_length = calc_route_length(pop[0], city_coords)
+
+        if current_best_length != best_length:
+            best_length = current_best_length
+            last_iteration_changed = i
+
         if i % 10 == 0:
-            print(" Best length : " + str(calc_route_length(pop[0], city_coords)))
+            tqdm.write(" Best length : " + str(current_best_length))
 
     sol_best = rank_routes(pop, city_coords)[0]
 
@@ -276,20 +293,72 @@ def tune_parameters_ga(min_pop_size, pop_step, pop_iter, min_elite, elite_step, 
     print("\n")
     return (best_length, best_pop_size, best_elitism_size, best_norm_factor, best_mutation_prob)
 
-def do_ga_runs(pop_size, elitism_size, norm_factor, mutation_prob, max_iteration, city_coords):
+def tune_parameters_ga_nomut(min_pop_size, pop_step, pop_iter, min_elite, elite_step, elite_iter, min_norm, norm_step, norm_iter, max_iteration, city_coords):
+    pop_size = min_pop_size
+    elitism_size = min_elite
+    norm_factor = min_norm
+
+    mutation_prob = 99999
+
+    results = []
+
+    i = 0
+    for i in tqdm(range(0, pop_iter)):
+        j = 0
+        elitism_size = min_elite
+        for j in tqdm(range(0, elite_iter)):
+            k = 0
+            norm_factor = min_norm
+            for k in tqdm(range(0, norm_iter)):
+
+                solution = perform_genetic_algorithm(pop_size, elitism_size, norm_factor, mutation_prob, max_iteration, city_coords)
+                length = calc_route_length(solution, city_coords)
+                results.append((length, pop_size, elitism_size, norm_factor))
+
+                # print("Completed run " + str(i) + "/" + str(pop_iter-1) + ", " + str(j) + "/" + str(elite_iter-1) + ", " + str(k) + "/" + str(norm_iter-1) + ", " + str(m) + "/" + str(mut_iter-1))
+            
+                norm_factor = norm_factor + norm_step
+            elitism_size = elitism_size + elite_step
+        pop_size = pop_size + pop_step
+        
+    print("\n")
+    return results
+
+def find_best_parameters_ga(results):
+    best_pop_size = 0
+    best_elitism_size = 0
+    best_norm_factor = 0
+    best_length = float("inf")
+
+    for (length, pop_size, elitism_size, norm_factor) in results:
+        if length < best_length:
+            best_length = length
+            best_pop_size = pop_size
+            best_elitism_size = elitism_size
+            best_norm_factor = norm_factor
+
+    return (best_length, best_pop_size, best_elitism_size, best_norm_factor)
+
+def do_ga_runs(pop_size, elitism_size, norm_factor, mutation_prob, max_iteration, max_runs, city_coords):
 
     solutions = []
     lengths = []
     cumulative_lengths = 0
 
+    best_length = float("inf")
+    best_solution = []
+
     for i in range(0, max_runs):
-        sol = perform_genetic_algorithm(pop_size, elitism_size, norm_factor, mutation_prob, max_iteration, city_coords)
-        solutions.append(sol)
-        length = calc_route_length(sol, city_coords)
+        solution = perform_genetic_algorithm(pop_size, elitism_size, norm_factor, mutation_prob, max_iteration, city_coords)
+        solutions.append(solution)
+        length = calc_route_length(solution, city_coords)
         lengths.append(length)
         cumulative_lengths = cumulative_lengths + length
+        if length < best_length:
+            best_length = length
+            best_solution = solution
 
     average_length = cumulative_lengths / max_runs
     standard_dev = statistics.stdev(lengths)
 
-    return (solutions, lengths, average_length, standard_dev)
+    return (solutions, lengths, best_solution, best_length, average_length, standard_dev)
