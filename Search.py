@@ -38,10 +38,30 @@ city_coords = read_tsp_file("att48.tsp")
 
 # # Running GA
 # (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ga_runs(, 3000, 30, city_coords)
+# print(parameter_results)
 # print(average_length)
 # print(standard_dev)
 # print(best_length)
 # draw_route(best_solution, city_coords)
+
+
+### TABU SEARCH
+# Finding parameters
+# parameter_results = tune_parameters_ts(25, 25, 5, 50, 50, 6, 3000, city_coords)
+# print(parameter_results)
+# (best_length, best_tabu_size, best_tabu_penalty) = find_best_parameters_ts(parameter_results)
+# print((best_length, best_tabu_size, best_tabu_penalty))
+
+# # Running TS
+# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ts_runs(best_tabu_size, best_tabu_penalty, 3000, 30, city_coords)
+# print(parameter_results)
+# print((best_length, best_tabu_size, best_tabu_penalty))
+# print(average_length)
+# print(standard_dev)
+# print(best_length)
+# draw_route(best_solution, city_coords)
+
+solution = perform_tabu_search(50, 100, 3000, city_coords)
 
 
 
@@ -50,10 +70,10 @@ city_coords = read_tsp_file("att48.tsp")
 # print(calc_route_length(solution, city_coords))
 
 
-solution = perform_tabu_search(50, 3000, city_coords)
-print(solution)
-print(calc_route_length(solution, city_coords))
-draw_route(solution, city_coords)
+# solution = perform_tabu_search_better(50, 100, 3000, city_coords)
+# print(solution)
+# print(calc_route_length(solution, city_coords))
+# draw_route(solution, city_coords)
 
 # results = {}
 # for i in range(0, 10):
