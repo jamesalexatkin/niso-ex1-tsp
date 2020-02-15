@@ -13,6 +13,8 @@ from tabu_search import *
 # Program start
 city_coords = read_tsp_file("att48.tsp")
 
+draw_route(read_tour_file("att48.opt.tour"), city_coords)
+
 
 ### SIMULATED ANNEALING
 # # Finding parameters
@@ -52,25 +54,29 @@ city_coords = read_tsp_file("att48.tsp")
 
 
 ### TABU SEARCH
-# Finding parameters
-# parameter_results = tune_parameters_ts(25, 25, 5, 50, 50, 6, 3000, city_coords)
+# # Finding parameters
+# parameter_results = tune_parameters_ts(5, 5, 5, 50, 50, 6, 3000, city_coords)
 # print(parameter_results)
-# (best_length, best_tabu_size, best_tabu_penalty) = find_best_parameters_ts(parameter_results)
-# print((best_length, best_tabu_size, best_tabu_penalty))
+# (best_length, best_tabu_size, best_neighbourhood_size) = find_best_parameters_ts(parameter_results)
+# print((best_length, best_tabu_size, best_neighbourhood_size))
 
-# # Running TS
-# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ts_runs(best_tabu_size, best_tabu_penalty, 3000, 30, city_coords)
+# Running TS
+# (solutions, lengths, best_solution, best_length, average_length, standard_dev) = do_ts_runs(best_tabu_size, best_neighbourhood_size, 3000, 30, city_coords)
 # print("Parameter results: ")
 # print(parameter_results)
-# print("Best length, best tabu size, best tabu penalty: " + str(best_length) + ", " + str(best_tabu_size) + ", " + str(best_tabu_penalty))
+# print("Best length, best tabu size, best neighbourhood size: " + str(best_length) + ", " + str(best_tabu_size) + ", " + str(best_neighbourhood_size))
 # print("Average length: " + str(average_length))
 # print("Standard deviation: " + str(standard_dev))
 # print("Best length: " + str(best_length))
+# print("Lengths:")
+# print(lengths)
 # draw_route(best_solution, city_coords)
 
-solution = perform_tabu_search(1000, 100, 100, city_coords)
 
 
+# solution = perform_tabu_search(20, 1000, 3000, city_coords)
+# print(solution)
+# print(calc_route_length(solution, city_coords))
 
 # solution = perform_genetic_algorithm(1500, 0.5, 2, 0.5, 3000, city_coords)
 # print(solution)
