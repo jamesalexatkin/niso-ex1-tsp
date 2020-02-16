@@ -886,6 +886,10 @@ def do_ts_runs(tabu_size, neighbourhood_size, max_iteration, max_runs, city_coor
 ### You can also try playing around with the number of iterations etc.
 ### I've included the att48.tsp and att48.opt.tour files in the directory with this code. They must be in the same directory for the code to run properly
 
+### TROUBLESHOOTING
+### If you are having trouble with modules not being found, try running "pip install <MODULE-NAME>"
+### This might be the case for the tqdm module I used
+
 # Reading in the coordinate file to an object
 # You need to do this before running any of the algorithms so I've left it uncommented
 city_coords = read_tsp_file("att48.tsp")
